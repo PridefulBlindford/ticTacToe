@@ -94,30 +94,76 @@ let playGame=(function(firstPlayerName,secondPlayerName,firstPlayerMarker,second
         }
     }
     let finishGame=()=>{
-        if(playerWon(firstPlayerMarker)){
-            alert(`${firstPlayerName} has won the game!`);
-            ticBoard.restartBoard();
+        if(ticBoard.playerWon(firstPlayerMarker)){
+            return `${firstPlayerName} has won the game!`;
+    
 
         }
-        else if(ticBoard.pyarWon(secondPlayerMarker)){
-            alert(`${secondPlayerName} has won the game!`);
-            ticBoard.restartBoard();
+        else if(ticBoard.playerWon(secondPlayerMarker)){
+            return `${secondPlayerName} has won the game!`;
+        
         }
         else{
-            alert("It is a tie!");
-            ticBoard.restartBoard();
+            return "It is a tie!";
+    
         }
     }
-    let playRound=()=>{
-        let gameOver=false;
-        do{
-            playTurn();
-            currentPlayerName=currentPlayerName===firstPlayerName?currentPlayerName=secondPlayerName:currentPlayerName=firstPlayerName;
-            currentPlayerMarker=currentPlayerMarker===firstPlayerMarker?currentPlayerMarker=secondPlayerMarker:currentPlayerMarker=firstPlayerMarker;
-        }while(checkGameOver===-1);
-        finishGame();
+    let playRound=(boardSpace)=>{
+        ticBoard.updateBoard(currentPlayerMarker,boardSpace);
+        currentPlayerName=currentPlayerName===firstPlayerName?currentPlayerName=secondPlayerName:if(currentPlayerName===firstPlayerName){
+            currentPlayerName=secondPlayerName;
+            currentPlayerMarker=secondPlayerMarker;
+        }
+        else{
+            currentPlayerName=firstPlayerName;
+            currentPlayerMarker=firstPlayerMarker;
+        }
     }
-    return {playTurn,finishGame,playRound,checkGameOver};
+        
+        
+
+        
+    return {playTurn,finishGame,playRound,checkGameOver,ticBoard};
 
 
 })
+let displayGame=(()=>{
+    let firstPlayerInput;
+    let secondPlayerInput;
+    let nameEntryButton=document.querySelector(".name-entry-button");
+    let nameEntryForm=document.querySelector(".name-entry-form");
+    nameEntryButton.addEventListener("click",(event)=>{
+        event.preventDefault();
+        let nameData=new FormData(nameEntryForm);
+        firstPlayerInput=player(nameEntryForm.get("first-name"),1);
+        secondPlayerInput=player(nameEntryForm.get("second-name"),2);
+    });
+    let newGame=playGame(firstPlayerInput.name,secondPlayerInput.name,firstPlayerInput.marker,secondPlayerInput.marker);
+    let restartGameButton=document.querySelector(".restart-game");
+    let spaces=Array.from(document.querySelectorAll(".space"));
+    restartGameButton.addEventListener("click",()=>{
+        for(let i=0;i<spaces.length;i++){
+            spaces[i].innerText="empty";
+        }
+
+    });
+    let gameResultArea=document.querySelector(".game-result");
+    let addGameResult=()=>{
+        let gameDisplay=document.createElement("h2");
+        gameDisplay.innerText=newGame.finishGame();
+        gameResultArea.appendChild(gameDisplay);
+    
+    }
+    spaces.forEach((space)=>{
+        space.addEventListener("click",()=>{
+            let currentSpace=space.getAttribute("id");
+            currentSpace.innerText=newGame.currentPlayerMarker;
+            newGame.playRound(currentspace);
+            if(newGame.checkGameOver){
+                addGameResult();
+
+            };
+            });
+    });
+
+});
