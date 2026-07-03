@@ -47,7 +47,7 @@ const gameBoard=(function(){
         else if(board[2]===playerMarker&&board[5]===playerMarker&&board[8]===playerMarker){
             return true;
         }
-        else if(board[0]===plyaerMarker&&board[4]===playerMarker&&board[8]===playerMarker){
+        else if(board[0]===playerMarker&&board[4]===playerMarker&&board[8]===playerMarker){
             return true;
         }
         else if(board[2]===playerMarker&&board[4]===playerMarker&&board[6]===playerMarker){
@@ -59,7 +59,7 @@ const gameBoard=(function(){
     }
     let restartBoard=()=>{
         board=["","","","","","","","",""]
-        return board;;
+        return board;
     }
     return {board,updateBoard,checkPlayerWon,restartBoard,checkEmptySpace,checkBoardFull};
 });
@@ -83,7 +83,7 @@ let playGame=(function(firstPlayerName,secondPlayerName,firstPlayerMarker,second
         
     }
     let checkGameOver=()=>{
-        if(plticBoard.playerWon(firstPlayerMarker)||ticBoard.playerWon(secondPlayerMarker)){
+        if(plticBoard.checkPlayerWon(firstPlayerMarker)||ticBoard.checkPlayerWon(secondPlayerMarker)){
             return 1;
         }
         else if(ticBoard.checkBoardFull()){
@@ -94,12 +94,12 @@ let playGame=(function(firstPlayerName,secondPlayerName,firstPlayerMarker,second
         }
     }
     let finishGame=()=>{
-        if(ticBoard.playerWon(firstPlayerMarker)){
+        if(ticBoard.checkPlayerWon(firstPlayerMarker)){
             return `${firstPlayerName} has won the game!`;
     
 
         }
-        else if(ticBoard.playerWon(secondPlayerMarker)){
+        else if(ticBoard.checkPlayerWon(secondPlayerMarker)){
             return `${secondPlayerName} has won the game!`;
         
         }
@@ -123,21 +123,27 @@ let playGame=(function(firstPlayerName,secondPlayerName,firstPlayerMarker,second
         
 
         
-    return {playTurn,finishGame,playRound,checkGameOver,ticBoard};
+    return {playTurn,finishGame,playRound,checkGameOver,ticBoard,currentPlayerMarker};
 
 
 })
 let displayGame=(()=>{
-    let firstPlayerInput;
-    let secondPlayerInput;
+    let firstPlayerInput=player("bob",1);
+    let secondPlayerInput=player("Rob",2);
     let nameEntryButton=document.querySelector(".name-entry-button");
     let nameEntryForm=document.querySelector(".name-entry-form");
+    let nameEntryDialog=document.querySelector("dialog");
     nameEntryButton.addEventListener("click",(event)=>{
         event.preventDefault();
         let nameData=new FormData(nameEntryForm);
-        firstPlayerInput=player(nameData.get("first-name"),1);
-        secondPlayerInput=player(nameData.get("second-name"),2);
+        firstPlayerInput.name=nameData.get("first-name");
+        secondPlayerInput.name=nameData.get("second-name");
+        nameEntryDialog.close();
+        
+
+        
     });
+    
     let newGame=playGame(firstPlayerInput.name,secondPlayerInput.name,firstPlayerInput.marker,secondPlayerInput.marker);
     let restartGameButton=document.querySelector(".restart-game");
     let spaces=Array.from(document.querySelectorAll(".space"));
@@ -157,8 +163,11 @@ let displayGame=(()=>{
     spaces.forEach((space)=>{
         space.addEventListener("click",()=>{
             let currentSpace=space.getAttribute("id");
-            currentSpace.innerText=newGame.currentPlayerMarker;
-            newGame.playRound(currentspace);
+            
+            space.innerText=newGame.currentPlayerMarker;
+
+            newGame.playRound(currentSpace);
+            console.log(newGame.currentPlayerMarker);
             if(newGame.checkGameOver){
                 addGameResult();
 
