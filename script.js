@@ -1,12 +1,20 @@
 function player(name,playerNumber){
     
-    let marker=playerNumber===1?"x":"o";
+    let marker;
+    if(playerNumber===1){
+        marker="x";
+    }
+    else{
+        marker="o";
+    }
     return {name,marker};
 }
 const gameBoard=(function(){
     let board=["","","","","","","","",""];
     let updateBoard=(marker,boardSpace)=>{
         board[boardSpace]=marker;
+        
+        
     }
     let checkEmptySpace=(boardSpace)=>{
         if(board[board.space]===0){
@@ -83,7 +91,7 @@ let playGame=(function(firstPlayerName,secondPlayerName,firstPlayerMarker,second
         
     }
     let checkGameOver=()=>{
-        if(plticBoard.checkPlayerWon(firstPlayerMarker)||ticBoard.checkPlayerWon(secondPlayerMarker)){
+        if(ticBoard.checkPlayerWon(firstPlayerMarker)||ticBoard.checkPlayerWon(secondPlayerMarker)){
             return 1;
         }
         else if(ticBoard.checkBoardFull()){
@@ -163,16 +171,21 @@ let displayGame=(()=>{
     spaces.forEach((space)=>{
         space.addEventListener("click",()=>{
             let currentSpace=space.getAttribute("id");
+            if(space.innerText==="x"||space.innerText==="o"){
+                alert("You can't play there. Try putting your marker on a space that is empty.");
+            }
             
-            space.innerText=newGame.currentPlayerMarker;
+            else{
 
-            newGame.playRound(currentSpace);
-            console.log(newGame.currentPlayerMarker);
-            if(newGame.checkGameOver){
-                addGameResult();
+                newGame.playRound(currentSpace-1);
+                space.innerText=newGame.ticBoard.board[currentSpace-1];
+            
+                if(newGame.checkGameOver()!==-1){
+                    addGameResult();
 
-            };
-            });
+                }
+            }
+        });
     });
 
 });
