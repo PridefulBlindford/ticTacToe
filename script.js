@@ -1,5 +1,5 @@
 function player(name,playerNumber){
-    let name=name;
+    
     let marker=playerNumber===1?"x":"o";
     return {name,marker};
 }
@@ -110,7 +110,7 @@ let playGame=(function(firstPlayerName,secondPlayerName,firstPlayerMarker,second
     }
     let playRound=(boardSpace)=>{
         ticBoard.updateBoard(currentPlayerMarker,boardSpace);
-        currentPlayerName=currentPlayerName===firstPlayerName?currentPlayerName=secondPlayerName:if(currentPlayerName===firstPlayerName){
+        if(currentPlayerName===firstPlayerName){
             currentPlayerName=secondPlayerName;
             currentPlayerMarker=secondPlayerMarker;
         }
@@ -135,8 +135,8 @@ let displayGame=(()=>{
     nameEntryButton.addEventListener("click",(event)=>{
         event.preventDefault();
         let nameData=new FormData(nameEntryForm);
-        firstPlayerInput=player(nameEntryForm.get("first-name"),1);
-        secondPlayerInput=player(nameEntryForm.get("second-name"),2);
+        firstPlayerInput=player(nameData.get("first-name"),1);
+        secondPlayerInput=player(nameData.get("second-name"),2);
     });
     let newGame=playGame(firstPlayerInput.name,secondPlayerInput.name,firstPlayerInput.marker,secondPlayerInput.marker);
     let restartGameButton=document.querySelector(".restart-game");
@@ -167,3 +167,4 @@ let displayGame=(()=>{
     });
 
 });
+displayGame();
